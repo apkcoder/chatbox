@@ -46,19 +46,42 @@ export const myCopilotsAtom = atomWithStorage<CopilotDetail[]>(StorageKey.MyCopi
 const _sessionsAtom = atomWithStorage<Session[]>(StorageKey.ChatSessions, [], storage)
 export const sessionsAtom = atom(
     (get) => {
-        let sessions = get(_sessionsAtom)
-        if (sessions.length === 0) {
-            sessions = defaults.sessions()
+        try {
+            let sessions = get(_sessionsAtom)
+            // 确保 sessions 是一个数组
+            if (!sessions || !Array.isArray(sessions)) {
+                console.error('Sessions data is corrupted, resetting to default')
+                sessions = defaults.sessions()
+            }
+            if (sessions.length === 0) {
+                sessions = defaults.sessions()
+            }
+            return sessions
+        } catch (error) {
+            console.error('Error getting sessions:', error)
+            return defaults.sessions()
         }
-        return sessions
     },
     (get, set, update: SetStateAction<Session[]>) => {
-        const sessions = get(_sessionsAtom)
-        let newSessions = typeof update === 'function' ? update(sessions) : update
-        if (newSessions.length === 0) {
-            newSessions = defaults.sessions()
+        try {
+            const sessions = get(_sessionsAtom)
+            // 确保 sessions 是一个数组
+            const safeCurrentSessions = Array.isArray(sessions) ? sessions : []
+            let newSessions = typeof update === 'function' 
+                ? update(safeCurrentSessions) 
+                : update
+                
+            if (!newSessions || !Array.isArray(newSessions)) {
+                console.error('New sessions data is invalid, using defaults')
+                newSessions = defaults.sessions()
+            } else if (newSessions.length === 0) {
+                newSessions = defaults.sessions()
+            }
+            set(_sessionsAtom, newSessions)
+        } catch (error) {
+            console.error('Error setting sessions:', error)
+            set(_sessionsAtom, defaults.sessions())
         }
-        set(_sessionsAtom, newSessions)
     }
 )
 export const sortedSessionsAtom = atom((get) => {

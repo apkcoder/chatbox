@@ -41,63 +41,6 @@ export default function DisplaySettingTab(props: {
                     { value: Theme.DarkMode, label: t('Dark Mode') },
                 ]}
             />
-            <FormGroup>
-                <FormControlLabel
-                    control={<Switch />}
-                    label={t('show message word count')}
-                    checked={settingsEdit.showWordCount}
-                    onChange={(e, checked) =>
-                        setSettingsEdit({
-                            ...settingsEdit,
-                            showWordCount: checked,
-                        })
-                    }
-                />
-                <FormControlLabel
-                    control={<Switch />}
-                    label={t('show message token count')}
-                    checked={settingsEdit.showTokenCount}
-                    onChange={(e, checked) =>
-                        setSettingsEdit({
-                            ...settingsEdit,
-                            showTokenCount: checked,
-                        })
-                    }
-                />
-                <FormControlLabel
-                    control={<Switch />}
-                    label={t('show message token usage')}
-                    checked={settingsEdit.showTokenUsed}
-                    onChange={(e, checked) =>
-                        setSettingsEdit({
-                            ...settingsEdit,
-                            showTokenUsed: checked,
-                        })
-                    }
-                />
-                <FormControlLabel
-                    control={<Switch />}
-                    label={t('show model name')}
-                    checked={settingsEdit.showModelName}
-                    onChange={(e, checked) =>
-                        setSettingsEdit({
-                            ...settingsEdit,
-                            showModelName: checked,
-                        })
-                    }
-                />
-                <FormControlLabel
-                    control={<Switch />}
-                    label={t('show message timestamp')}
-                    checked={settingsEdit.showMessageTimestamp}
-                    onChange={(e, checked) =>
-                        setSettingsEdit({
-                            ...settingsEdit,
-                            showMessageTimestamp: checked,
-                        })
-                    }
-                />
-            </FormGroup>
         </Box>
     )
 }

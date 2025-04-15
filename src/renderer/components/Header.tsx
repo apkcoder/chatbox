@@ -18,7 +18,7 @@ export default function Header(props: Props) {
         const autoGenerateTitle : boolean = getAutoGenerateTitle()
         if (
             autoGenerateTitle &&
-            currentSession.name === 'Untitled'
+            currentSession.name === '新会话'
             && currentSession.messages.length >= 2
         ) {
             sessionActions.generateName(currentSession.id)

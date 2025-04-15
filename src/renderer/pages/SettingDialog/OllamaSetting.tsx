@@ -53,19 +53,93 @@ export function OllamaModelSelect(props: {
 }) {
     const { t } = useTranslation()
     const [models, setModels] = useState<string[]>([])
+    const [loading, setLoading] = useState<boolean>(true)
+    
+    // 强制设置默认模型，防止模型未选择的情况
     useEffect(() => {
+        // 不再预先设置固定的默认模型名称，而是在获取模型列表后再决定
+    }, [])
+    
+    useEffect(() => {
+        setLoading(true)
         const model = new Ollama({
             ollamaHost: props.ollamaHost,
-            ollamaModel: props.ollamaModel,
+            ollamaModel: props.ollamaModel, // 不再提供固定的默认值
             temperature: 0.5,
         })
+        
+        console.log("正在获取Ollama模型列表...")
         model.listModels().then((models) => {
-            setModels(models)
+            console.log("获取到的模型列表:", models)
+            // 过滤掉不需要显示的模型
+            const filteredModels = models.filter(model => model !== 'mxbai-embed-large:latest')
+            console.log("过滤后的模型列表:", filteredModels)
+            
+            if (filteredModels.length === 0) {
+                console.log("没有找到可用模型")
+                setLoading(false)
+                return
+            }
+            
+            // 查找所有以deepseek开头的模型
+            const deepseekModels = filteredModels.filter(model => 
+                model.toLowerCase().includes('deepseek')
+            )
+            console.log("找到的deepseek模型:", deepseekModels)
+            
+            // 重新排序模型列表，将deepseek模型放在最前面
+            const reorderedModels = [...filteredModels].sort((a, b) => {
+                const aHasDeepseek = a.toLowerCase().includes('deepseek')
+                const bHasDeepseek = b.toLowerCase().includes('deepseek')
+                
+                if (aHasDeepseek && !bHasDeepseek) return -1
+                if (!aHasDeepseek && bHasDeepseek) return 1
+                return 0
+            })
+            
+            console.log("重新排序后的模型列表:", reorderedModels)
+            setModels(reorderedModels)
+            
+            // 如果当前没有选中的模型或者选中的模型不在可用列表中
+            if (!props.ollamaModel || !filteredModels.includes(props.ollamaModel)) {
+                // 如果有deepseek模型，选择第一个deepseek模型
+                if (deepseekModels.length > 0) {
+                    console.log("自动选择deepseek模型:", deepseekModels[0])
+                    props.setOlamaModel(deepseekModels[0])
+                } else {
+                    // 否则选择第一个可用模型
+                    console.log("无deepseek模型可用，选择第一个模型:", reorderedModels[0])
+                    props.setOlamaModel(reorderedModels[0])
+                }
+            } else {
+                console.log("保持当前已选择的模型:", props.ollamaModel)
+            }
+            
+            setLoading(false)
+        }).catch(error => {
+            console.error("获取模型列表出错:", error)
+            setLoading(false)
         })
-        if (props.ollamaModel && models.length > 0 && !models.includes(props.ollamaModel)) {
-            props.setOlamaModel(models[0])
-        }
     }, [props.ollamaHost])
+    
+    // 如果还在加载中，显示加载中的文本
+    if (loading) {
+        return (
+            <FormControl fullWidth variant="outlined" margin="dense" className={props.className}>
+                <InputLabel htmlFor="ollama-model-select">{t('model')}</InputLabel>
+                <Select
+                    label={t('model')}
+                    id="ollama-model-select"
+                    value={props.ollamaModel || ""}
+                    disabled
+                >
+                    <MenuItem value="">
+                        正在加载模型...
+                    </MenuItem>
+                </Select>
+            </FormControl>
+        )
+    }
     return (
         <FormControl fullWidth variant="outlined" margin="dense" className={props.className}>
             <InputLabel htmlFor="ollama-model-select">{t('model')}</InputLabel>

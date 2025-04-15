@@ -21,6 +21,23 @@ export default function Markdown(props: {
     className?: string
 }) {
     const { children, hiddenCodeCopyButton, className } = props
+
+    // 处理think标签，将其替换为引用样式
+    const processedContent = useMemo(() => {
+        let content = children;
+        
+        // 将<think>...</think>替换为引用形式(>)
+        content = content.replace(/<think>([\s\S]*?)<\/think>/gi, (match, p1) => {
+            // 将内容按行分割，每行前添加 > 
+            const quotedContent = p1.split('\n')
+                .map((line: string) => `> ${line}`)
+                .join('\n');
+            return quotedContent;
+        });
+        
+        return content;
+    }, [children]);
+
     return useMemo(() => (
         <ReactMarkdown
             remarkPlugins={
@@ -43,9 +60,9 @@ export default function Markdown(props: {
                 ),
             }}
         >
-            { children }
+            { processedContent }
         </ReactMarkdown>
-    ), [children])
+    ), [processedContent])
 }
 
 export function CodeBlock(props: any) {

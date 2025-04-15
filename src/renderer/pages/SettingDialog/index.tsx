@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Button, Tabs, Tab, Dialog, DialogContent, DialogActions, DialogTitle, Box } from '@mui/material'
-import { Settings, SettingWindowTab, Theme } from '../../../shared/types'
+import { Settings, SettingWindowTab, Theme, ModelProvider } from '../../../shared/types'
 import { useTranslation } from 'react-i18next'
 import { useAtom } from 'jotai'
 import { settingsAtom } from '../../stores/atoms'
@@ -48,6 +48,8 @@ export default function SettingWindow(props: Props) {
     }, [settings])
 
     const onSave = () => {
+        // 确保 aiProvider 始终是 Ollama
+        settingsEdit.aiProvider = ModelProvider.Ollama
         setSettings(settingsEdit)
         props.close()
     }

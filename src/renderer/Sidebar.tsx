@@ -77,7 +77,7 @@ export default function Sidebar(props: Props) {
                             >
                                 <img src={icon} className="w-8 h-8 mr-3" />
                                 <div className="flex flex-col items-start">
-                                    <span className="text-2xl font-medium">Chatbox</span>
+                                    <span className="text-2xl font-medium">AI聊天工具</span>
                                     <span className="text-[10px] opacity-50">Community Edition</span>
                                 </div>
                             </a>
@@ -101,6 +101,7 @@ export default function Sidebar(props: Props) {
                             </Typography>
                         </MenuItem>
 
+                        {/* 隐藏"我的搭档"入口
                         <MenuItem onClick={props.openCopilotWindow} sx={{ padding: '0.2rem 0.1rem', margin: '0.1rem' }}>
                             <ListItemIcon>
                                 <IconButton>
@@ -111,6 +112,7 @@ export default function Sidebar(props: Props) {
                                 <Typography>{t('My Copilots')}</Typography>
                             </ListItemText>
                         </MenuItem>
+                        */}
 
                         <MenuItem
                             onClick={() => {

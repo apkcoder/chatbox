@@ -3,9 +3,9 @@ import { v4 as uuidv4 } from 'uuid'
 
 export function settings(): Settings {
     return {
-        aiProvider: ModelProvider.OpenAI,
+        aiProvider: ModelProvider.Ollama,
         openaiKey: '',
-        apiHost: 'https://api.openai.com',
+        apiHost: 'http://127.0.0.1:11434',
 
         azureApikey: '',
         azureDeploymentName: '',
@@ -31,13 +31,13 @@ export function settings(): Settings {
         lmStudioHost: 'http://127.0.0.1:1234',
         lmStudioModel: '',
 
-        showWordCount: true,
+        showWordCount: false,
         showTokenCount: false,
-        showTokenUsed: true,
-        showModelName: true,
+        showTokenUsed: false,
+        showModelName: false,
         showMessageTimestamp: false,
         userAvatarKey: '',
-        theme: Theme.FollowSystem,
+        theme: Theme.LightMode,
         language: 'en',
         fontSize: 12,
         spellCheck: true,
@@ -69,5 +69,5 @@ export function getDefaultPrompt() {
 }
 
 export function sessions(): Session[] {
-    return [{ id: uuidv4(), name: 'Untitled', messages: [], type: 'chat' }]
+    return [{ id: uuidv4(), name: '新会话', messages: [], type: 'chat' }]
 }
