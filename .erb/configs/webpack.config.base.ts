@@ -52,6 +52,11 @@ const configuration: webpack.Configuration = {
             USE_LOCAL_API: '',
         }),
     ],
+
+    optimization: {
+        usedExports: true,
+        sideEffects: true
+    },
 }
 
 export default configuration

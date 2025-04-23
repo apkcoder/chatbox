@@ -34,7 +34,7 @@ const configuration: webpack.Configuration = {
     output: {
         path: webpackPaths.distRendererPath,
         publicPath: './',
-        filename: 'renderer.js',
+        filename: '[name].js',
         library: {
             type: 'umd',
         },
@@ -97,7 +97,41 @@ const configuration: webpack.Configuration = {
 
     optimization: {
         minimize: true,
-        minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        drop_console: true,
+                        drop_debugger: true,
+                        pure_funcs: ['console.log', 'console.debug', 'console.info'],
+                    },
+                    mangle: true,
+                    output: {
+                        comments: false,
+                    },
+                },
+                extractComments: false,
+            }),
+            new CssMinimizerPlugin()
+        ],
+        splitChunks: {
+            chunks: 'all',
+            name: false,
+            cacheGroups: {
+                vendors: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                    priority: 10,
+                },
+                styles: {
+                    name: 'styles',
+                    test: /\.css$/,
+                    chunks: 'all',
+                    enforce: true,
+                }
+            }
+        }
     },
 
     plugins: [
@@ -116,7 +150,7 @@ const configuration: webpack.Configuration = {
         }),
 
         new MiniCssExtractPlugin({
-            filename: 'style.css',
+            filename: '[name].css',
         }),
 
         new BundleAnalyzerPlugin({

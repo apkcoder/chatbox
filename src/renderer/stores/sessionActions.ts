@@ -155,14 +155,30 @@ export async function submitNewUserMessage(params: {
     needGenerating: boolean
 }) {
     const { currentSessionId, newUserMsg, needGenerating } = params
+    
+    // 确保立即插入用户消息
     insertMessage(currentSessionId, newUserMsg)
+    
+    // 强制UI更新，确保第一条消息显示
+    setTimeout(() => {
+        scrollActions.scrollToBottom()
+    }, 50)
+    
     let newAssistantMsg = createMessage('assistant', '')
     if (needGenerating) {
         newAssistantMsg.generating = true
         insertMessage(currentSessionId, newAssistantMsg)
-    }
-    if (needGenerating) {
-        return generate(currentSessionId, newAssistantMsg)
+        
+        // 再次确保滚动到底部，显示正在生成的消息
+        setTimeout(() => {
+            scrollActions.scrollToBottom()
+        }, 100)
+        
+        // 使用setTimeout确保生成过程不会阻塞UI
+        setTimeout(() => {
+            generate(currentSessionId, newAssistantMsg)
+        }, 150)
+        return
     }
 }
 
@@ -258,7 +274,7 @@ async function _generateName(sessionId: string, modifyName: (sessionId: string, 
             settings.language,
         ),
         )
-        name = name.replace(/['"“”]/g, '')
+        name = name.replace(/['"“"']/g, '')
         name = name.slice(0, 10)
         modifyName(session.id, name)
     } catch (e: any) {
@@ -311,17 +327,21 @@ function genMessageContext(settings: Settings, msgs: Message[]) {
 export function initEmptyChatSession(): Session {
     const store = getDefaultStore()
     const settings = store.get(atoms.settingsAtom)
+    const systemPrompt = settings.defaultPrompt || defaults.getDefaultPrompt()
+    
+    // 确保系统消息有时间戳和ID，便于追踪
+    const systemMessage = {
+        id: uuidv4(),
+        role: 'system' as const,
+        content: systemPrompt,
+        timestamp: new Date().getTime(),
+    }
+    
     return {
         id: uuidv4(),
         name: '新会话',
         type: 'chat',
-        messages: [
-            {
-                id: uuidv4(),
-                role: 'system',
-                content: settings.defaultPrompt || defaults.getDefaultPrompt(),
-            },
-        ],
+        messages: [systemMessage],
     }
 }
 
