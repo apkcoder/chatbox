@@ -20,6 +20,39 @@ export default class Ollama extends Base {
         this.options = options
     }
 
+    /**
+     * 验证与Ollama服务器的连接
+     * 通过尝试获取模型列表来验证
+     */
+    async validateConnection(): Promise<boolean> {
+        try {
+            console.log(`[Ollama] 验证连接到 ${this.getHost()}`)
+            const models = await this.listModels()
+            console.log(`[Ollama] 连接成功，可用模型: ${models.length}个`)
+            
+            // 如果没有设置模型名称，尝试自动设置
+            if (!this.options.ollamaModel && models.length > 0) {
+                // 优先选择deepseek模型
+                const deepseekModels = models.filter(model => 
+                    model.toLowerCase().includes('deepseek')
+                )
+                
+                if (deepseekModels.length > 0) {
+                    this.options.ollamaModel = deepseekModels[0]
+                    console.log(`[Ollama] 自动选择deepseek模型: ${this.options.ollamaModel}`)
+                } else {
+                    this.options.ollamaModel = models[0]
+                    console.log(`[Ollama] 自动选择模型: ${this.options.ollamaModel}`)
+                }
+            }
+            
+            return true
+        } catch (error) {
+            console.error(`[Ollama] 连接验证失败:`, error)
+            return false
+        }
+    }
+
     getHost(): string {
         let host = this.options.ollamaHost.trim()
         if (host.endsWith('/')) {

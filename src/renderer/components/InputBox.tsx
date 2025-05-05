@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Typography, useTheme } from '@mui/material'
 import { SessionType, createMessage } from '../../shared/types'
 import { useTranslation } from 'react-i18next'
@@ -26,17 +26,33 @@ export default function InputBox(props: Props) {
     const { t } = useTranslation()
     const [messageInput, setMessageInput] = useState('')
     const inputRef = useRef<HTMLTextAreaElement | null>(null)
+    const [easterEgg, setEasterEgg] = useState(false)
+
+    // 记录组件挂载和会话ID变化
+    useEffect(() => {
+        console.log(`[输入框] 输入框组件挂载或会话ID更新: ${props.currentSessionId}`)
+        return () => {
+            console.log(`[输入框] 输入框组件卸载，会话ID: ${props.currentSessionId}`)
+        }
+    }, [props.currentSessionId])
 
     const handleSubmit = (needGenerating = true) => {
         if (messageInput.trim() === '') {
+            console.log(`[输入框] 阻止提交空消息`)
             return
         }
+        
+        console.log(`[输入框] 提交新消息，会话ID: ${props.currentSessionId}, 内容长度: ${messageInput.length}, 需要生成回复: ${needGenerating}`)
         const newMessage = createMessage('user', messageInput)
+        console.log(`[输入框] 创建的用户消息ID: ${newMessage.id}`)
+        
         sessionActions.submitNewUserMessage({
             currentSessionId: props.currentSessionId,
             newUserMsg: newMessage,
             needGenerating,
         })
+        
+        console.log(`[输入框] 消息已提交，清空输入框`)
         setMessageInput('')
         trackingEvent('send_message', { event_category: 'user' })
     }
@@ -46,6 +62,10 @@ export default function InputBox(props: Props) {
 
     const onMessageInput = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         const input = event.target.value
+        // 避免频繁记录每次按键，使用长度变化较大时才记录
+        if (Math.abs(input.length - messageInput.length) > 10) {
+            console.log(`[输入框] 用户输入更新，当前长度: ${input.length}字符`)
+        }
         setMessageInput(input)
     }
 
@@ -57,18 +77,18 @@ export default function InputBox(props: Props) {
             !event.altKey &&
             !event.metaKey
         ) {
+            console.log(`[输入框] 按下Enter键提交消息`)
             event.preventDefault()
             handleSubmit()
             return
         }
         if (event.keyCode === 13 && event.ctrlKey) {
+            console.log(`[输入框] 按下Ctrl+Enter提交消息但不生成回复`)
             event.preventDefault()
             handleSubmit(false)
             return
         }
     }
-
-    const [easterEgg, setEasterEgg] = useState(false)
 
     return (
         <div className='pl-2 pr-4'

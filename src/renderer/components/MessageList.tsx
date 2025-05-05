@@ -11,9 +11,21 @@ export default function MessageList(props: Props) {
     const currentMessageList = useAtomValue(atoms.currentMessageListAtom)
     const ref = useRef<HTMLDivElement | null>(null)
     const [, setMessageListRef] = useAtom(atoms.messageListRefAtom)
+    
     useEffect(() => {
         setMessageListRef(ref)
     }, [ref])
+    
+    // 添加消息列表变化的日志
+    useEffect(() => {
+        console.log(`[消息列表] 消息列表更新: 会话ID=${currentSession.id}, 消息数量=${currentMessageList.length}`)
+        // 记录消息列表中的消息ID，便于调试
+        if (currentMessageList.length > 0) {
+            const messageIds = currentMessageList.map(m => m.id).join(', ')
+            console.log(`[消息列表] 当前消息ID列表: ${messageIds}`)
+        }
+    }, [currentMessageList, currentSession.id])
+    
     return (
             <div className='overflow-y-auto w-full h-full pr-0 pl-0' ref={ref}>
                 {

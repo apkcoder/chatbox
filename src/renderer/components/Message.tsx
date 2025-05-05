@@ -96,11 +96,23 @@ export default function Message(props: Props) {
         tips.push('time: ' + messageTimestamp)
     }
 
+    // 组件挂载时记录日志
     useEffect(() => {
+        console.log(`[消息组件] 消息组件挂载: ${msg.id}, 角色: ${msg.role}, 生成中: ${msg.generating}`)
+        return () => {
+            console.log(`[消息组件] 消息组件卸载: ${msg.id}`)
+        }
+    }, [msg.id])
+
+    // 当消息内容变化时记录日志
+    useEffect(() => {
+        console.log(`[消息组件] 消息内容更新: ${msg.id}, 内容长度: ${typeof msg.content === 'string' ? msg.content.length : 'non-string'}, 生成中: ${msg.generating}`)
+        
         if (msg.generating) {
+            console.log(`[消息组件] 滚动到底部，因为消息 ${msg.id} 正在生成中`)
             scrollActions.scrollToBottom()
         }
-    }, [msg.content])
+    }, [msg.content, msg.generating, msg.id])
 
     let content = msg.content
     if (typeof msg.content !== 'string') {

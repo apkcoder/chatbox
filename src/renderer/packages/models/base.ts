@@ -9,6 +9,17 @@ export default class Base {
     constructor() {
     }
 
+    /**
+     * 验证与AI提供商的连接
+     * 子类可以重写此方法来实现具体的验证逻辑
+     * 默认实现只是返回一个成功的Promise
+     */
+    async validateConnection(): Promise<boolean> {
+        // 基础实现，子类应该重写此方法提供实际的验证逻辑
+        console.log(`[${this.name}] 使用默认的连接验证方法`)
+        return true
+    }
+
     async callChatCompletion(messages: Message[], signal?: AbortSignal, onResultChange?: onResultChange): Promise<string> {
         throw new AIProviderNoImplementedChatError(this.name)
     }
