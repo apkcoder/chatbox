@@ -5,7 +5,7 @@ export default class BaseStorage {
 
     public async setItem<T>(key: string, value: T): Promise<void> {
         try {
-            return platform.setStoreValue(key, value)
+        return platform.setStoreValue(key, value)
         } catch (error) {
             console.error(`BaseStorage.setItem error for key ${key}:`, error)
         }
@@ -13,11 +13,11 @@ export default class BaseStorage {
 
     public async getItem<T>(key: string, initialValue: T): Promise<T> {
         try {
-            let value: any = await platform.getStoreValue(key)
-            if (value === undefined || value === null) {
-                value = initialValue
-                this.setItem(key, value)
-            }
+        let value: any = await platform.getStoreValue(key)
+        if (value === undefined || value === null) {
+            value = initialValue
+            this.setItem(key, value)
+        }
             
             // 尝试解析 JSON 字符串，如果是的话
             if (typeof value === 'string' && (value.startsWith('{') || value.startsWith('['))) {
@@ -30,7 +30,7 @@ export default class BaseStorage {
                 }
             }
             
-            return value
+        return value
         } catch (error) {
             console.error(`BaseStorage.getItem error for key ${key}:`, error)
             return initialValue

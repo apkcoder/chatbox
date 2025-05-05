@@ -47,16 +47,16 @@ const _sessionsAtom = atomWithStorage<Session[]>(StorageKey.ChatSessions, [], st
 export const sessionsAtom = atom(
     (get) => {
         try {
-            let sessions = get(_sessionsAtom)
+        let sessions = get(_sessionsAtom)
             // 确保 sessions 是一个数组
             if (!sessions || !Array.isArray(sessions)) {
                 console.error('Sessions data is corrupted, resetting to default')
                 sessions = defaults.sessions()
             }
-            if (sessions.length === 0) {
-                sessions = defaults.sessions()
-            }
-            return sessions
+        if (sessions.length === 0) {
+            sessions = defaults.sessions()
+        }
+        return sessions
         } catch (error) {
             console.error('Error getting sessions:', error)
             return defaults.sessions()
@@ -64,7 +64,7 @@ export const sessionsAtom = atom(
     },
     (get, set, update: SetStateAction<Session[]>) => {
         try {
-            const sessions = get(_sessionsAtom)
+        const sessions = get(_sessionsAtom)
             // 确保 sessions 是一个数组
             const safeCurrentSessions = Array.isArray(sessions) ? sessions : []
             let newSessions = typeof update === 'function' 
@@ -75,9 +75,9 @@ export const sessionsAtom = atom(
                 console.error('New sessions data is invalid, using defaults')
                 newSessions = defaults.sessions()
             } else if (newSessions.length === 0) {
-                newSessions = defaults.sessions()
-            }
-            set(_sessionsAtom, newSessions)
+            newSessions = defaults.sessions()
+        }
+        set(_sessionsAtom, newSessions)
         } catch (error) {
             console.error('Error setting sessions:', error)
             set(_sessionsAtom, defaults.sessions())

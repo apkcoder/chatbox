@@ -17,28 +17,28 @@ export default class StoreStorage extends BaseStorage {
     }
     public async getItem<T>(key: string, initialValue: T): Promise<T> {
         try {
-            let value: T = await super.getItem(key, initialValue)
+        let value: T = await super.getItem(key, initialValue)
 
             // 特殊处理会话数据
             if (key === StorageKey.ChatSessions) {
                 // 检查数据是否有效
                 if (!value || typeof value !== 'object' || (Array.isArray(value) && value.length === 0)) {
-                    const lang = await platform.getLocale().catch(e => 'en')
-                    if (lang.startsWith('zh')) {
-                        value = defaultSessionsForCN as T
-                    } else {
-                        value = defaultSessionsForEN as T
-                    }
+            const lang = await platform.getLocale().catch(e => 'en')
+            if (lang.startsWith('zh')) {
+                value = defaultSessionsForCN as T
+            } else {
+                value = defaultSessionsForEN as T
+            }
                     console.log('Using default sessions for', lang)
-                    await super.setItem(key, value)
-                }
+            await super.setItem(key, value)
+        }
             }
             
-            if (key === StorageKey.Configs && value === initialValue) {
-                await super.setItem(key, initialValue)
-            }
+        if (key === StorageKey.Configs && value === initialValue) {
+            await super.setItem(key, initialValue)
+        }
 
-            return value
+        return value
         } catch (error) {
             console.error(`Error getting item ${key}:`, error)
             // 出现错误时返回初始值

@@ -110,7 +110,7 @@ export function OllamaModelSelect(props: {
                     // 否则选择第一个可用模型
                     console.log("无deepseek模型可用，选择第一个模型:", reorderedModels[0])
                     props.setOlamaModel(reorderedModels[0])
-                }
+        }
             } else {
                 console.log("保持当前已选择的模型:", props.ollamaModel)
             }
